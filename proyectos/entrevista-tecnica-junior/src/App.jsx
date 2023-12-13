@@ -1,47 +1,24 @@
 import { useEffect, useState } from 'react'
 import './App.css'
-
-const API_RANDOM_FACTS = 'https://catfact.ninja/fact'
-const API_RANDOM_IMAGE = 'https://cataas.com/cat/says/'
-import axios from 'axios'
+import { useCatImage } from './hooks/useCatImage';
+import { useCatFact } from './hooks/useCatFact';
 
 function App() {
-  const [fact, setFact] = useState();
-  const [image, setImage] = useState();
+  const { fact, refreshCat } = useCatFact() //CUSTOM HOOK
+  const { image } = useCatImage({ fact }) //CUSTOM KOOH
 
-  //Traemos información random de los gatos
-  useEffect(() => {
-    fetch(API_RANDOM_FACTS)
-    .then(res => res.json())
-    .then(data => {
-      const {fact} = data
-      setFact(fact)
-    })
-  }, [])
-
-  //Traemos una imagen en base a la primera palabra de la informacion.
-  useEffect(()=>{
-    if(!fact) return 
-
-    const firstWorld = fact.split(' ').slice(0, 1).join(' ')
-    console.log(firstWorld);
-
-    axios.get(`${API_RANDOM_IMAGE}${firstWorld}`)
-    .then((response) => {
-      const {config} = response
-      const url = config.url
-      setImage(url)
-    })
-    
-  }, [fact]);
+  const handleClick = async() => {
+    refreshCat()
+  }
   
   return (
   <>
   <main className="card card-side bg-base-100 shadow-xl">
-  <figure><img className="w-[200px] h-[200px]" src={image} alt={`imagen relacionada a la primera palabra del dato: ${fact}`}/></figure>
+  <figure><img className="w-[600px] h-[600px]" src={image} alt={`imagen relacionada a la primera palabra del dato: ${fact}`}/></figure>
   <div className="card-body">
     <h2 className="card-title">Imagenes de gatos!</h2>
     <p>{fact}</p>
+  <button className="btn btn-outline btn-primary" onClick={handleClick}>Nuevo dato</button>
   </div>
   </main>  
 
